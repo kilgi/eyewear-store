@@ -17,12 +17,10 @@
 
     <main class="max-w-xl mx-auto px-4 py-16">
         <h1 class="text-3xl font-black tracking-tight text-white mb-2">Secure Order Request</h1>
-        <p class="text-zinc-500 text-sm mb-8">Fill out your details. You can scan our QR code to pay now and upload a receipt, or skip it to pay cash on delivery.</p>
+        <p class="text-zinc-500 text-sm mb-8">Fill out your details. You can scan our QR code to pay now and provide a reference ID, or skip it to pay cash on delivery.</p>
 
-        <!-- Form tag now runs our custom JavaScript submission function instead of loading a backend URL -->
         <form id="checkout-form" onsubmit="handleOrderSubmission(event)" class="space-y-6">
             
-            <!-- Customer Details -->
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Full Name</label>
                 <input type="text" id="cust-name" name="name" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
@@ -36,7 +34,7 @@
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Select Frame Variant</label>
                 <select id="product-select" name="product" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
-                    <option value="The Classic Ony">The Classic Onyx — Rs. 2,500</option>
+                    <option value="The Classic Onyx">The Classic Onyx — Rs. 2,500</option>
                     <option value="The Study Scholar">The Study Scholar — Rs. 2,300</option>
                     <option value="Digital Nomad">Digital Nomad — Rs. 2,650</option>
                     <option value="The Vintage Tortoise">The Vintage Tortoise — Rs. 2,800</option>
@@ -50,7 +48,6 @@
                 <textarea id="cust-address" name="address" rows="3" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition"></textarea>
             </div>
 
-            <!-- PAYMENT METHOD CHOICE -->
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Payment Preference</label>
                 <select id="payment-method" name="payment_method" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
@@ -59,9 +56,8 @@
                 </select>
             </div>
 
-            <!-- OPTIONAL QR PAYMENT BLOCK -->
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
-                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">Merchant Payment QR (Optional)</label>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">Merchant Payment QR</label>
                 <div class="w-44 h-44 bg-white rounded-xl mx-auto flex items-center justify-center p-2">
                     <img src="qr-placeholder.png" alt="Payment QR Code" class="w-full h-full object-contain">
                 </div>
@@ -69,12 +65,9 @@
                 
                 <hr class="border-zinc-800 my-2">
 
-                <!-- Conditional Upload Layer -->
-                <div class="space-y-4">
-                    <div>
-                        <label id="upload-label" class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Upload Receipt Photo (Optional)</label>
-                        <input type="file" id="receipt_screenshot" name="receipt_screenshot" accept="image/*" class="w-full text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700 cursor-pointer">
-                    </div>
+                <div>
+                    <label id="payment-label" class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Payment Reference Details</label>
+                    <input type="text" id="payment_reference" name="payment_ref" placeholder="e.g., Transaction ID or Sender Bank Name" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-zinc-500 transition">
                 </div>
             </div>
 
@@ -84,7 +77,6 @@
         </form>
     </main>
 
-    <!-- Automation Operations Logic -->
     <script>
         // ⚠️ PASTE YOUR COPIED DISCORD WEBHOOK URL BETWEEN THESE QUOTES:
         const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1517531298413936674/NX2uJ-JTxRUtatI-yzFEdd1jk_faTNBfeRaBZB5K5yiUQo2wdllti93Tjri9GoMJt6yn";
@@ -104,20 +96,21 @@
                 localStorage.removeItem('selectedProductTitle');
             }
 
-            // Part 2: Smart File Requirement Validation
+            // Part 2: Smart Reference Validation Rules
             const paymentSelect = document.getElementById('payment-method');
-            const fileInput = document.getElementById('receipt_screenshot');
-            const uploadLabel = document.getElementById('upload-label');
+            const refInput = document.getElementById('payment_reference');
+            const paymentLabel = document.getElementById('payment-label');
 
             function assessValidationRules() {
                 if (paymentSelect.value === "QR Scan Advanced Payment") {
-                    fileInput.required = true;
-                    uploadLabel.innerText = "Upload Receipt Photo (REQUIRED FOR QR PAYMENTS)";
-                    uploadLabel.classList.add('text-amber-400');
+                    refInput.required = true;
+                    paymentLabel.innerText = "Transaction ID / Sender Name (REQUIRED FOR QR)";
+                    paymentLabel.classList.add('text-amber-400');
                 } else {
-                    fileInput.required = false;
-                    uploadLabel.innerText = "Upload Receipt Photo (Optional)";
-                    uploadLabel.classList.remove('text-amber-400');
+                    refInput.required = false;
+                    refInput.value = ""; 
+                    paymentLabel.innerText = "Payment Reference Details (Optional)";
+                    paymentLabel.classList.remove('text-amber-400');
                 }
             }
 
@@ -127,53 +120,45 @@
 
         // Part 3: Direct Webhook Post Handler
         async function handleOrderSubmission(event) {
-            event.preventDefault(); // Stop page from refreshing instantly
+            event.preventDefault(); 
 
             const name = document.getElementById('cust-name').value;
             const phone = document.getElementById('cust-phone').value;
             const product = document.getElementById('product-select').value;
             const address = document.getElementById('cust-address').value;
             const method = document.getElementById('payment-method').value;
+            const reference = document.getElementById('payment_reference').value || "None (COD Order)";
 
-            // Notice text warning if they chose QR payment but skipped uploading a file string
-            const fileField = document.getElementById('receipt_screenshot');
-            let fileNotice = "No file attached (COD order)";
-            if (fileField.files.length > 0) {
-                fileNotice = `📄 File attached: ${fileField.files[0].name} (Files require a paid backend server to host links; contact client manually if needed)`;
-            }
-
-            // Clean block layout string for your Discord notification message channel box
+            // Packaged text data format to be pushed natively into Discord web channels
             const discordMessagePayload = {
                 content: `**You've received a new submission from specs and shade**\n` +
-````\n` +
-                         `name: ${name}\n` +
-                         `phone: ${phone}\n` +
-                         `product: ${product}\n` +
-                         `address: ${address}\n` +
-                         `payment_method: ${method}\n` +
-                         `file_status: ${fileNotice}\n` +
-                         `````
-};
+                         `\`\`\`\n` +
+                         `Name: ${name}\n` +
+                         `Phone: ${phone}\n` +
+                         `Product: ${product}\n` +
+                         `Address: ${address}\n` +
+                         `Payment Method: ${method}\n` +
+                         `Transaction ID/Ref: ${reference}\n` +
+                         `\`\`\``
+            };
 
-try {
-// Post directly to Discord via fetch API
-const response = await fetch(DISCORD_WEBHOOK_URL, {
-method: 'POST',
-headers: { 'Content-Type': 'application/json' },
-body: JSON.stringify(discordMessagePayload)
-});
+            try {
+                const response = await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(discordMessagePayload)
+                });
 
-if (response.ok) {
-// Redirect smoothly to your custom dark mode confirmation landing screen
-window.location.href = "https://kilgi.github.io/eyewear-store/success.html";
-} else {
-alert("Something went wrong communicating with the notifications server. Please retry.");
-}
-} catch (error) {
-console.error("Submission Error:", error);
-alert("Network error. Please try again.");
-}
-}
-</script>
+                if (response.ok) {
+                    window.location.href = "https://kilgi.github.io/eyewear-store/success.html";
+                } else {
+                    alert("Something went wrong communicating with notifications server. Please retry.");
+                }
+            } catch (error) {
+                console.error("Submission Error:", error);
+                alert("Network error. Please try again.");
+            }
+        }
+    </script>
 </body>
 </html>
