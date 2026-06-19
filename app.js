@@ -1,4 +1,4 @@
-const BUSINESS_CONTACT_NUMBER = "9779800000000"; 
+const BUSINESS_CONTACT_NUMBER = "9779800000000";
 
 const EYEWEAR_COLLECTION = [
     {
@@ -42,13 +42,6 @@ const EYEWEAR_COLLECTION = [
         specification: "Dark Metal Edition / UV Sun block",
         price: "Rs. 3,100",
         photoUrl: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-        id: "frame_07",
-        title: "Midnight Aviator",
-        specification: "Dark Metal Edition / UV Sun block",
-        price: "Rs. 3,100",
-        photoUrl: ""
     }
 ];
 
@@ -56,9 +49,12 @@ function initializeStorefront() {
     const targetGrid = document.getElementById('product-grid');
     if (!targetGrid) return;
 
-    targetGrid.innerHTML = ""; 
+    targetGrid.innerHTML = "";
 
     EYEWEAR_COLLECTION.forEach(item => {
+        // Create a unique clean value string for the dropdown match
+        const optionValue = `${item.title} (Blue-Ray Filter)`;
+        
         const cardStructure = `
             <div class="product-card bg-zinc-900 border border-zinc-800/60 rounded-2xl overflow-hidden p-5 flex flex-col justify-between">
                 <div>
@@ -77,7 +73,7 @@ function initializeStorefront() {
                         <button onclick="dispatchSecureOrder('${item.title}', '${item.price}')" class="w-full bg-white text-black py-2.5 rounded-xl text-xs font-bold tracking-wide hover:bg-zinc-200 transition cursor-pointer">
                             Order via WhatsApp
                         </button>
-                        <a href="order.html" class="w-full bg-zinc-800 text-zinc-300 py-2.5 rounded-xl text-xs font-bold tracking-wide text-center hover:bg-zinc-700 transition border border-zinc-700/50">
+                        <a href="order.html" onclick="saveSelectedProduct('${item.title}')" class="w-full bg-zinc-800 text-zinc-300 py-2.5 rounded-xl text-xs font-bold tracking-wide text-center hover:bg-zinc-700 transition border border-zinc-700/50">
                             Use Backup Form
                         </a>
                     </div>
@@ -86,6 +82,11 @@ function initializeStorefront() {
         `;
         targetGrid.innerHTML += cardStructure;
     });
+}
+
+// Saves chosen model name to browser storage before routing
+function saveSelectedProduct(productTitle) {
+    localStorage.setItem('selectedProductTitle', productTitle);
 }
 
 function dispatchSecureOrder(name, price) {
