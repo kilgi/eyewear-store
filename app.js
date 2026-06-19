@@ -1,4 +1,4 @@
-const BUSINESS_CONTACT_NUMBER = "9779800000000";
+const BUSINESS_CONTACT_NUMBER = "9779840032840";
 
 const EYEWEAR_COLLECTION = [
     {
@@ -52,9 +52,6 @@ function initializeStorefront() {
     targetGrid.innerHTML = "";
 
     EYEWEAR_COLLECTION.forEach(item => {
-        // Create a unique clean value string for the dropdown match
-        const optionValue = `${item.title} (Blue-Ray Filter)`;
-        
         const cardStructure = `
             <div class="product-card bg-zinc-900 border border-zinc-800/60 rounded-2xl overflow-hidden p-5 flex flex-col justify-between">
                 <div>
