@@ -38,14 +38,13 @@
 
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Select Frame Variant</label>
-                <select name="product" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
-                    <option value="Classic (Blue-Ray Filter)">The Classic Onyx (Blue-Ray Filter) — Rs. 2,500</option>
-                    <option value="The Study Scholar (Blue-Ray Filter)">The Study Scholar (Blue-Ray Filter) — Rs. 2,300</option>
-                    <option value="Digital Nomad (Blue-Ray Filter)">Digital Nomad (Blue-Ray Filter) — Rs. 2,650</option>
-                    <option value="The Vintage Tortoise (Sunglasses)">The Vintage Tortoise (Sunglasses) — Rs. 2,800</option>
-                    <option value="The Clear Crystal (Sunglasses)">The Clear Crystal (Sunglasses) — Rs. 2,400</option>
-                    <option value="Midnight Aviator (Dark Shades)">Midnight Aviator (Dark Shades) — Rs. 3,100</option>
-                    <option value="Midnight (Dark Shades)">Midnight (Dark Shades) — Rs. 3,100</option>
+                <select id="product-select" name="product" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+                    <option value="The Classic Onyx">The Classic Onyx — Rs. 2,500</option>
+                    <option value="The Study Scholar">The Study Scholar — Rs. 2,300</option>
+                    <option value="Digital Nomad">Digital Nomad — Rs. 2,650</option>
+                    <option value="The Vintage Tortoise">The Vintage Tortoise — Rs. 2,800</option>
+                    <option value="The Clear Crystal">The Clear Crystal — Rs. 2,400</option>
+                    <option value="Midnight Aviator">Midnight Aviator — Rs. 3,100</option>
                 </select>
             </div>
 
@@ -57,7 +56,7 @@
             <!-- PAYMENT METHOD CHOICE -->
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Payment Preference</label>
-                <select name="payment_method" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+                <select id="payment-method" name="payment_method" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
                     <option value="Cash on Delivery">Cash on Delivery (COD)</option>
                     <option value="QR Scan Advanced Payment">Scan QR Code Now</option>
                 </select>
@@ -73,10 +72,10 @@
                 
                 <hr class="border-zinc-800 my-2">
 
-                <!-- Optional Upload Layer (No "required" attribute) -->
+                <!-- Conditional Upload Layer -->
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Upload Receipt Photo (Optional)</label>
+                        <label id="upload-label" class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Upload Receipt Photo (Optional)</label>
                         <input type="file" id="receipt_screenshot" name="receipt_screenshot" accept="image/*" class="w-full text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700 cursor-pointer">
                     </div>
                 </div>
@@ -88,5 +87,45 @@
         </form>
     </main>
 
+    <!-- Automation Operations Logic -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Part 1: Automated Catalog Dropdown Match
+            const savedProduct = localStorage.getItem('selectedProductTitle');
+            const selectDropdown = document.getElementById('product-select');
+            
+            if (savedProduct && selectDropdown) {
+                for (let option of selectDropdown.options) {
+                    if (option.value === savedProduct) {
+                        option.selected = true;
+                        break;
+                    }
+                }
+                // Clear out used item token to ensure clean future visits
+                localStorage.removeItem('selectedProductTitle');
+            }
+
+            // Part 2: Smart File Requirement Validation
+            const paymentSelect = document.getElementById('payment-method');
+            const fileInput = document.getElementById('receipt_screenshot');
+            const uploadLabel = document.getElementById('upload-label');
+
+            function assessValidationRules() {
+                if (paymentSelect.value === "QR Scan Advanced Payment") {
+                    fileInput.required = true;
+                    uploadLabel.innerText = "Upload Receipt Photo (REQUIRED FOR QR PAYMENTS)";
+                    uploadLabel.classList.add('text-amber-400');
+                } else {
+                    fileInput.required = false;
+                    uploadLabel.innerText = "Upload Receipt Photo (Optional)";
+                    uploadLabel.classList.remove('text-amber-400');
+                }
+            }
+
+            // Run check on form inputs immediately and listen for changes
+            paymentSelect.addEventListener('change', assessValidationRules);
+            assessValidationRules();
+        });
+    </script>
 </body>
 </html>
