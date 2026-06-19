@@ -42,6 +42,13 @@ const EYEWEAR_COLLECTION = [
         specification: "Dark Metal Edition / UV Sun block",
         price: "Rs. 3,100",
         photoUrl: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+        id: "frame_07",
+        title: "Midnight Aviator",
+        specification: "Dark Metal Edition / UV Sun block",
+        price: "Rs. 3,100",
+        photoUrl: ""
     }
 ];
 
