@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout Form | Specs & Shade</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-zinc-950 text-zinc-100 font-sans antialiased">
+
+    <nav class="bg-zinc-900 border-b border-zinc-800/50 h-20 flex items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <a href="index.html" class="text-white font-black tracking-widest text-sm uppercase">&larr; Back To Catalog</a>
+        </div>
+    </nav>
+
+    <main class="max-w-xl mx-auto px-4 py-16">
+        <h1 class="text-3xl font-black tracking-tight text-white mb-2">Secure Order Request</h1>
+        <p class="text-zinc-500 text-sm mb-8">Fill out your details. You can scan our QR code to pay now and upload a receipt, or skip it to pay cash on delivery.</p>
+
+        <!-- Formspree Target Configuration -->
+        <form action="https://formspree.io/f/meewyedo" method="POST" enctype="multipart/form-data" class="space-y-6">
+            
+            <!-- FIXED REDIRECT (Works perfectly for local testing and GitHub Pages) -->
+            <input type="hidden" name="_next" value="./success.html">
+
+            <!-- Customer Details -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Full Name</label>
+                <input type="text" name="name" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Contact Number</label>
+                <input type="tel" name="phone" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Select Frame Variant</label>
+                <select name="product" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+                    <option value="Classic Onyx (Blue-Ray Filter)">The Classic Onyx (Blue-Ray Filter) — Rs. 2,500</option>
+                    <option value="The Study Scholar (Blue-Ray Filter)">The Study Scholar (Blue-Ray Filter) — Rs. 2,300</option>
+                    <option value="Digital Nomad (Blue-Ray Filter)">Digital Nomad (Blue-Ray Filter) — Rs. 2,650</option>
+                    <option value="The Vintage Tortoise (Sunglasses)">The Vintage Tortoise (Sunglasses) — Rs. 2,800</option>
+                    <option value="The Clear Crystal (Sunglasses)">The Clear Crystal (Sunglasses) — Rs. 2,400</option>
+                    <option value="Midnight Aviator (Dark Shades)">Midnight Aviator (Dark Shades) — Rs. 3,100</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Delivery Address Details</label>
+                <textarea name="address" rows="3" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition"></textarea>
+            </div>
+
+            <!-- PAYMENT METHOD CHOICE -->
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Payment Preference</label>
+                <select name="payment_method" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+                    <option value="Cash on Delivery">Cash on Delivery (COD)</option>
+                    <option value="QR Scan Advanced Payment">Scan QR Code Now</option>
+                </select>
+            </div>
+
+            <!-- OPTIONAL QR PAYMENT BLOCK -->
+            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">Merchant Payment QR (Optional)</label>
+                <div class="w-44 h-44 bg-white rounded-xl mx-auto flex items-center justify-center p-2">
+                    <img src="qr-placeholder.png" alt="Payment QR Code" class="w-full h-full object-contain">
+                </div>
+                <p class="text-center text-xs text-zinc-500">Only scan if you selected "Scan QR Code Now" above.</p>
+                
+                <hr class="border-zinc-800 my-2">
+
+                <!-- Optional Upload Layer (No "required" attribute) -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Upload Receipt Photo (Optional)</label>
+                        <input type="file" name="receipt_screenshot" accept="image/*" class="w-full text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-zinc-800 file:text-white hover:file:bg-zinc-700 cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:bg-zinc-200 transition-all cursor-pointer shadow-md">
+                Submit Secure Order Request
+            </button>
+        </form>
+    </main>
+
+</body>
+</html>
