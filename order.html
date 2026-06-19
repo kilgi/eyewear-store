@@ -19,27 +19,24 @@
         <h1 class="text-3xl font-black tracking-tight text-white mb-2">Secure Order Request</h1>
         <p class="text-zinc-500 text-sm mb-8">Fill out your details. You can scan our QR code to pay now and upload a receipt, or skip it to pay cash on delivery.</p>
 
-        <!-- Formspree Target Configuration -->
-        <form action="https://formspree.io/f/meewyedo" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <!-- Form tag now runs our custom JavaScript submission function instead of loading a backend URL -->
+        <form id="checkout-form" onsubmit="handleOrderSubmission(event)" class="space-y-6">
             
-            <!-- FIXED REDIRECT (Works perfectly for local testing and GitHub Pages) -->
-            <input type="hidden" name="_next" value="https://kilgi.github.io/eyewear-store/success.html">
-
             <!-- Customer Details -->
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Full Name</label>
-                <input type="text" name="name" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+                <input type="text" id="cust-name" name="name" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
             </div>
 
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Contact Number</label>
-                <input type="tel" name="phone" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+                <input type="tel" id="cust-phone" name="phone" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
             </div>
 
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Select Frame Variant</label>
                 <select id="product-select" name="product" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
-                    <option value="The Classic Onyx">The Classic Onyx — Rs. 2,500</option>
+                    <option value="The Classic Ony">The Classic Onyx — Rs. 2,500</option>
                     <option value="The Study Scholar">The Study Scholar — Rs. 2,300</option>
                     <option value="Digital Nomad">Digital Nomad — Rs. 2,650</option>
                     <option value="The Vintage Tortoise">The Vintage Tortoise — Rs. 2,800</option>
@@ -50,7 +47,7 @@
 
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Delivery Address Details</label>
-                <textarea name="address" rows="3" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition"></textarea>
+                <textarea id="cust-address" name="address" rows="3" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition"></textarea>
             </div>
 
             <!-- PAYMENT METHOD CHOICE -->
@@ -89,6 +86,9 @@
 
     <!-- Automation Operations Logic -->
     <script>
+        // ⚠️ PASTE YOUR COPIED DISCORD WEBHOOK URL BETWEEN THESE QUOTES:
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1517531298413936674/NX2uJ-JTxRUtatI-yzFEdd1jk_faTNBfeRaBZB5K5yiUQo2wdllti93Tjri9GoMJt6yn";
+
         document.addEventListener("DOMContentLoaded", function() {
             // Part 1: Automated Catalog Dropdown Match
             const savedProduct = localStorage.getItem('selectedProductTitle');
@@ -101,7 +101,6 @@
                         break;
                     }
                 }
-                // Clear out used item token to ensure clean future visits
                 localStorage.removeItem('selectedProductTitle');
             }
 
@@ -122,10 +121,59 @@
                 }
             }
 
-            // Run check on form inputs immediately and listen for changes
             paymentSelect.addEventListener('change', assessValidationRules);
             assessValidationRules();
         });
-    </script>
+
+        // Part 3: Direct Webhook Post Handler
+        async function handleOrderSubmission(event) {
+            event.preventDefault(); // Stop page from refreshing instantly
+
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const product = document.getElementById('product-select').value;
+            const address = document.getElementById('cust-address').value;
+            const method = document.getElementById('payment-method').value;
+
+            // Notice text warning if they chose QR payment but skipped uploading a file string
+            const fileField = document.getElementById('receipt_screenshot');
+            let fileNotice = "No file attached (COD order)";
+            if (fileField.files.length > 0) {
+                fileNotice = `📄 File attached: ${fileField.files[0].name} (Files require a paid backend server to host links; contact client manually if needed)`;
+            }
+
+            // Clean block layout string for your Discord notification message channel box
+            const discordMessagePayload = {
+                content: `**You've received a new submission from specs and shade**\n` +
+````\n` +
+                         `name: ${name}\n` +
+                         `phone: ${phone}\n` +
+                         `product: ${product}\n` +
+                         `address: ${address}\n` +
+                         `payment_method: ${method}\n` +
+                         `file_status: ${fileNotice}\n` +
+                         `````
+};
+
+try {
+// Post directly to Discord via fetch API
+const response = await fetch(DISCORD_WEBHOOK_URL, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(discordMessagePayload)
+});
+
+if (response.ok) {
+// Redirect smoothly to your custom dark mode confirmation landing screen
+window.location.href = "https://kilgi.github.io/eyewear-store/success.html";
+} else {
+alert("Something went wrong communicating with the notifications server. Please retry.");
+}
+} catch (error) {
+console.error("Submission Error:", error);
+alert("Network error. Please try again.");
+}
+}
+</script>
 </body>
 </html>
