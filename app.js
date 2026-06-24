@@ -1,6 +1,10 @@
 const BUSINESS_CONTACT_NUMBER = "9779840032840";
 
-const FIREBASE_DB_URL = "https://eyewear-store-4ec1e-default-rtdb.firebaseio.com/";
+// Clean base project URL 
+const SUPABASE_URL = "https://hlctahkdvdfcrhoqfxzo.supabase.co"; 
+const SUPABASE_ANON_KEY = "sb_publishable_CUazdiJCEdeIEbrDv8Ji7g_XIQ0BeqR";
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function initializeStorefront() {
     const targetGrid = document.getElementById('product-grid');
@@ -9,18 +13,24 @@ async function initializeStorefront() {
     targetGrid.innerHTML = "<p class='text-zinc-500 text-sm col-span-full text-center py-12'>Loading latest collection...</p>";
 
     try {
-        const response = await fetch(`${FIREBASE_DB_URL}products.json`);
-        const data = await response.json();
+        const { data: eyewearCollection, error } = await supabaseClient
+            .from('products')
+            .select('*');
 
-        if (!data || Object.keys(data).length === 0) {
+        if (error) {
+            console.error("Database fetch error:", error);
+            targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center py-12'>Failed to connect to database collection.</p>";
+            return;
+        }
+
+        if (!eyewearCollection || eyewearCollection.length === 0) {
             targetGrid.innerHTML = "<p class='text-zinc-500 text-sm col-span-full text-center py-12'>No items currently in stock.</p>";
             return;
         }
 
         targetGrid.innerHTML = "";
 
-        Object.keys(data).forEach(id => {
-            const item = data[id];
+        eyewearCollection.forEach(item => {
             const cardStructure = `
                 <div class="product-card bg-zinc-900 border border-zinc-800/60 rounded-2xl overflow-hidden p-5 flex flex-col justify-between">
                     <div>
