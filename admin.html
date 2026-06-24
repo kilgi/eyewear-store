@@ -61,45 +61,49 @@
 
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@1.35.7/dist/umd/supabase.js"></script>
     <script>
         const SUPABASE_URL = "https://hlctahkdvdfcrhoqfxzo.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_CUazdiJCEdeIEbrDv8Ji7g_XIQ0BeqR";
 
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         async function fetchAndRenderInventory() {
             const container = document.getElementById('admin-inventory-list');
             container.innerHTML = "<p class='text-zinc-500 text-xs py-4'>Querying table contents...</p>";
 
-            const { data: inventory, error } = await supabaseClient
-                .from('products')
-                .select('*');
+            try {
+                const { data: inventory, error } = await supabaseClient
+                    .from('products')
+                    .select('*');
 
-            if (error) {
-                container.innerHTML = "<p class='text-red-400 text-xs py-4'>Error fetching database contents.</p>";
-                return;
-            }
+                if (error) {
+                    container.innerHTML = "<p class='text-red-400 text-xs py-4'>Error fetching database contents.</p>";
+                    return;
+                }
 
-            if (!inventory || inventory.length === 0) {
-                container.innerHTML = "<p class='text-zinc-500 text-xs py-4'>Inventory table is completely empty.</p>";
-                return;
-            }
+                if (!inventory || inventory.length === 0) {
+                    container.innerHTML = "<p class='text-zinc-500 text-xs py-4'>Inventory table is completely empty.</p>";
+                    return;
+                }
 
-            container.innerHTML = "";
-            inventory.forEach(item => {
-                container.innerHTML += `
-                    <div class="bg-zinc-900 border border-zinc-800/60 rounded-xl p-4 flex items-center justify-between">
-                        <div>
-                            <h4 class="text-sm font-bold text-white">${item.title}</h4>
-                            <p class="text-xs text-zinc-500">${item.specification} — <span class="text-zinc-400 font-semibold">${item.price}</span></p>
+                container.innerHTML = "";
+                inventory.forEach(item => {
+                    container.innerHTML += `
+                        <div class="bg-zinc-900 border border-zinc-800/60 rounded-xl p-4 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-sm font-bold text-white">${item.title}</h4>
+                                <p class="text-xs text-zinc-500">${item.specification} — <span class="text-zinc-400 font-semibold">${item.price}</span></p>
+                            </div>
+                            <button onclick="deleteProduct('${item.id}')" class="bg-red-950/40 text-red-400 border border-red-900/50 hover:bg-red-900 hover:text-white transition px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+                                Remove
+                            </button>
                         </div>
-                        <button onclick="deleteProduct('${item.id}')" class="bg-red-950/40 text-red-400 border border-red-900/50 hover:bg-red-900 hover:text-white transition px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
-                            Remove
-                        </button>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            } catch (err) {
+                container.innerHTML = "<p class='text-red-400 text-xs py-4'>Network connection blocked by browser.</p>";
+            }
         }
 
         document.getElementById('add-product-form').addEventListener('submit', async function(e) {
@@ -110,30 +114,38 @@
             const price = document.getElementById('prod-price').value;
             const photoUrl = document.getElementById('prod-url').value;
 
-            const { error } = await supabaseClient
-                .from('products')
-                .insert([{ title, specification, price, photoUrl }]);
+            try {
+                const { error } = await supabaseClient
+                    .from('products')
+                    .insert([{ title, specification, price, photoUrl }]);
 
-            if (error) {
-                alert("Insertion failed: " + error.message);
-            } else {
-                this.reset();
-                fetchAndRenderInventory();
+                if (error) {
+                    alert("Insertion failed: " + error.message);
+                } else {
+                    this.reset();
+                    fetchAndRenderInventory();
+                }
+            } catch (err) {
+                alert("Request blocked. Try using a regular browser tab or disabling content blockers.");
             }
         });
 
         async function deleteProduct(id) {
             if (!confirm("Are you sure you want to remove this product from the dynamic storefront?")) return;
 
-            const { error } = await supabaseClient
-                .from('products')
-                .delete()
-                .eq('id', id);
+            try {
+                const { error } = await supabaseClient
+                    .from('products')
+                    .delete()
+                    .eq('id', id);
 
-            if (error) {
-                alert("Deletion error: " + error.message);
-            } else {
-                fetchAndRenderInventory();
+                if (error) {
+                    alert("Deletion error: " + error.message);
+                } else {
+                    fetchAndRenderInventory();
+                }
+            } catch (err) {
+                alert("Network block preventing deletion.");
             }
         }
 
