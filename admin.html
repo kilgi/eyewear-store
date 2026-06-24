@@ -75,7 +75,7 @@
                     .select('*');
 
                 if (error) {
-                    container.innerHTML = "<p class='text-red-400 text-xs py-4'>Error fetching database contents.</p>";
+                    container.innerHTML = `<p class='text-red-400 text-xs py-4'>Error: ${error.message}</p>`;
                     return;
                 }
 
@@ -123,7 +123,7 @@
                     fetchAndRenderInventory();
                 }
             } catch (err) {
-                alert("Request error. Try submitting in an incognito tab.");
+                alert("Request error encountered.");
             }
         });
 
