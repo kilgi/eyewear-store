@@ -1,6 +1,6 @@
 const BUSINESS_CONTACT_NUMBER = "9779840032840";
 
-const FIREBASE_DB_URL = "https://eyewear-store-3e2b2-default-rtdb.firebaseio.com/";
+const FIREBASE_DB_URL = "https://eyewear-store-4ec1e-default-rtdb.firebaseio.com/";
 
 async function initializeStorefront() {
     const targetGrid = document.getElementById('product-grid');
