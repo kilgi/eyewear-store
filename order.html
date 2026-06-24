@@ -17,125 +17,107 @@
 
     <main class="max-w-xl mx-auto px-4 py-16">
         <h1 class="text-3xl font-black tracking-tight text-white mb-2">Secure Order Request</h1>
-        <p class="text-zinc-500 text-sm mb-8">Fill out your details. You can scan our QR code to pay now and provide a reference ID, or skip it to pay cash on delivery.</p>
+        <p class="text-zinc-500 text-sm mb-8">Fill out your details below to submit your backup order request.</p>
 
         <form id="checkout-form" onsubmit="handleOrderSubmission(event)" class="space-y-6">
-            
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Full Name</label>
-                <input type="text" id="cust-name" name="name" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+                <input type="text" id="customer_name" required placeholder="John Doe" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Contact Number</label>
-                <input type="tel" id="cust-phone" name="phone" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Phone Number</label>
+                <input type="tel" id="customer_phone" required placeholder="98XXXXXXXX" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Select Frame Variant</label>
-                <select id="product-select" name="product" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
-                    <option value="The Classic Onyx">The Classic Onyx — Rs. 2,500</option>
-                    <option value="The Study Scholar">The Study Scholar — Rs. 2,300</option>
-                    <option value="Digital Nomad">Digital Nomad — Rs. 2,650</option>
-                    <option value="The Vintage Tortoise">The Vintage Tortoise — Rs. 2,800</option>
-                    <option value="The Clear Crystal">The Clear Crystal — Rs. 2,400</option>
-                    <option value="Midnight Aviator">Midnight Aviator — Rs. 3,100</option>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Selected Product Frame</label>
+                <select id="variant_select" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
+                    <option value="" disabled selected>Loading variants from store database...</option>
                 </select>
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Delivery Address Details</label>
-                <textarea id="cust-address" name="address" rows="3" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition"></textarea>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Delivery Address</label>
+                <textarea id="customer_address" required rows="3" placeholder="Street Name, House No., City" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500 transition resize-none"></textarea>
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Payment Preference</label>
-                <select id="payment-method" name="payment_method" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-zinc-500 transition">
-                    <option value="Cash on Delivery">Cash on Delivery (COD)</option>
-                    <option value="QR Scan Advanced Payment">Scan QR Code Now</option>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Payment Method</label>
+                <select id="payment_method" required class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
+                    <option value="COD">Cash on Delivery (COD)</option>
+                    <option value="Prepaid">Prepaid / QR Code Scan</option>
                 </select>
             </div>
 
-            <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-4">
-                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400">Merchant Payment QR</label>
-                <div class="w-44 h-44 bg-white rounded-xl mx-auto flex items-center justify-center p-2">
-                    <img src="qr-placeholder.png" alt="Payment QR Code" class="w-full h-full object-contain">
-                </div>
-                <p class="text-center text-xs text-zinc-500">Only scan if you selected "Scan QR Code Now" above.</p>
-                
-                <hr class="border-zinc-800 my-2">
-
-                <div>
-                    <label id="payment-label" class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Payment Reference Details</label>
-                    <input type="text" id="payment_reference" name="payment_ref" placeholder="e.g., Transaction ID or Sender Bank Name" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-zinc-500 transition">
-                </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-2">Transaction ID / Reference (Optional)</label>
+                <input type="text" id="payment_reference" placeholder="Only required if you paid via QR" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-zinc-500 transition">
             </div>
 
-            <button type="submit" class="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:bg-zinc-200 transition-all cursor-pointer shadow-md">
-                Submit Secure Order Request
+            <button type="submit" class="w-full bg-white text-black font-black py-3.5 rounded-xl text-sm uppercase tracking-wider hover:bg-zinc-200 transition cursor-pointer">
+                Submit Backup Order
             </button>
         </form>
     </main>
 
     <script>
-        // ⚠️ PASTE YOUR COPIED DISCORD WEBHOOK URL BETWEEN THESE QUOTES:
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1517531298413936674/NX2uJ-JTxRUtatI-yzFEdd1jk_faTNBfeRaBZB5K5yiUQo2wdllti93Tjri9GoMJt6yn";
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1344265741639090207/q3r1E9FvVvSOf-I7b6f6O65nF6N455776O5N4N457nO45N57657nO45n675nO"; // Ensure your correct active webhook is placed here
+        const FIREBASE_DB_URL = "https://eyewear-store-4ec1e-default-rtdb.firebaseio.com/";
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // Part 1: Automated Catalog Dropdown Match
-            const savedProduct = localStorage.getItem('selectedProductTitle');
-            const selectDropdown = document.getElementById('product-select');
-            
-            if (savedProduct && selectDropdown) {
-                for (let option of selectDropdown.options) {
-                    if (option.value === savedProduct) {
+        // Fetch items directly from Firebase, populate choices, and auto-select the right one
+        async function setupDynamicVariants() {
+            const selectElement = document.getElementById('variant_select');
+            const preselectedProduct = localStorage.getItem('selectedProductTitle');
+
+            try {
+                const response = await fetch(`${FIREBASE_DB_URL}products.json`);
+                const data = await response.json();
+
+                if (!data) {
+                    selectElement.innerHTML = '<option value="" disabled>No products found in system</option>';
+                    return;
+                }
+
+                // Clear out loading option
+                selectElement.innerHTML = '';
+
+                // Dynamically append all database choices
+                Object.keys(data).forEach(id => {
+                    const item = data[id];
+                    const option = document.createElement('option');
+                    option.value = item.title;
+                    option.textContent = `${item.title} — ${item.price}`;
+                    
+                    // Auto-select if it matches the variant clicked on the home screen
+                    if (preselectedProduct && item.title === preselectedProduct) {
                         option.selected = true;
-                        break;
                     }
-                }
-                localStorage.removeItem('selectedProductTitle');
+                    
+                    selectElement.appendChild(option);
+                });
+
+            } catch (err) {
+                selectElement.innerHTML = '<option value="" disabled>Error loading active variants</option>';
             }
+        }
 
-            // Part 2: Smart Reference Validation Rules
-            const paymentSelect = document.getElementById('payment-method');
-            const refInput = document.getElementById('payment_reference');
-            const paymentLabel = document.getElementById('payment-label');
-
-            function assessValidationRules() {
-                if (paymentSelect.value === "QR Scan Advanced Payment") {
-                    refInput.required = true;
-                    paymentLabel.innerText = "Transaction ID / Sender Name (REQUIRED FOR QR)";
-                    paymentLabel.classList.add('text-amber-400');
-                } else {
-                    refInput.required = false;
-                    refInput.value = ""; 
-                    paymentLabel.innerText = "Payment Reference Details (Optional)";
-                    paymentLabel.classList.remove('text-amber-400');
-                }
-            }
-
-            paymentSelect.addEventListener('change', assessValidationRules);
-            assessValidationRules();
-        });
-
-        // Part 3: Direct Webhook Post Handler
         async function handleOrderSubmission(event) {
-            event.preventDefault(); 
+            event.preventDefault();
 
-            const name = document.getElementById('cust-name').value;
-            const phone = document.getElementById('cust-phone').value;
-            const product = document.getElementById('product-select').value;
-            const address = document.getElementById('cust-address').value;
-            const method = document.getElementById('payment-method').value;
+            const name = document.getElementById('customer_name').value;
+            const phone = document.getElementById('customer_phone').value;
+            const product = document.getElementById('variant_select').value;
+            const address = document.getElementById('customer_address').value;
+            const method = document.getElementById('payment_method').value;
             const reference = document.getElementById('payment_reference').value || "None (COD Order)";
 
-            // Packaged text data format to be pushed natively into Discord web channels
             const discordMessagePayload = {
-                content: `**You've received a new submission from specs and shade**\n` +
+                content: `**📦 New Backup Form Submission Received**\n` +
                          `\`\`\`\n` +
                          `Name: ${name}\n` +
                          `Phone: ${phone}\n` +
-                         `Product: ${product}\n` +
+                         `Product Ordered: ${product}\n` +
                          `Address: ${address}\n` +
                          `Payment Method: ${method}\n` +
                          `Transaction ID/Ref: ${reference}\n` +
@@ -150,15 +132,19 @@
                 });
 
                 if (response.ok) {
-                    window.location.href = "https://kilgi.github.io/eyewear-store/success.html";
+                    // Clear temporary selection cache
+                    localStorage.removeItem('selectedProductTitle');
+                    window.location.href = "success.html";
                 } else {
                     alert("Something went wrong communicating with notifications server. Please retry.");
                 }
             } catch (error) {
-                console.error("Submission Error:", error);
                 alert("Network error. Please try again.");
             }
         }
+
+        // Run variant calculations when page renders
+        document.addEventListener('DOMContentLoaded', setupDynamicVariants);
     </script>
 </body>
 </html>
