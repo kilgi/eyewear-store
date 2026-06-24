@@ -1,57 +1,37 @@
 const BUSINESS_CONTACT_NUMBER = "9779840032840";
 
-const EYEWEAR_COLLECTION = [
-    {
-        id: "frame_01",
-        title: "The Classic Onyx",
-        specification: "Gloss Black / Blue-Ray Filter",
-        price: "Rs. 2,500",
-        photoUrl: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-        id: "frame_02",
-        title: "The Study Scholar",
-        specification: "Clear Acetate / Blue-Ray Filter",
-        price: "Rs. 2,300",
-        photoUrl: "https://images.unsplash.com/photo-1543512214-318c7553f230?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-        id: "frame_03",
-        title: "Digital Nomad",
-        specification: "Matte Charcoal / Blue-Ray Filter",
-        price: "Rs. 2,650",
-        photoUrl: "https://images.unsplash.com/photo-1591076482161-42ce6da69f67?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-        id: "frame_04",
-        title: "The Vintage Tortoise",
-        specification: "Amber Frame / Polarized Sun G15",
-        price: "Rs. 2,800",
-        photoUrl: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-        id: "frame_05",
-        title: "The Clear Crystal",
-        specification: "Transparent / Silver Mirror Sun",
-        price: "Rs. 2,400",
-        photoUrl: "https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=600&q=80"
-    },
-    {
-        id: "frame_06",
-        title: "Midnight Aviator",
-        specification: "Dark Metal Edition / UV Sun block",
-        price: "Rs. 3,100",
-        photoUrl: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?auto=format&fit=crop&w=600&q=80"
-    }
-];
+// ⚠️ PASTE YOUR COPIED SUPABASE DETAILS HERE
+const SUPABASE_URL = "YOUR_SUPABASE_URL_HERE";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
 
-function initializeStorefront() {
+// Connect to the Supabase library
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function initializeStorefront() {
     const targetGrid = document.getElementById('product-grid');
     if (!targetGrid) return;
 
+    targetGrid.innerHTML = "<p class='text-zinc-500 text-sm col-span-full text-center py-10'>Loading latest collection...</p>";
+
+    // Fetch live entries from your table database
+    const { data: eyewearCollection, error } = await supabase
+        .from('products')
+        .select('*');
+
+    if (error) {
+        console.error("Error fetching inventory:", error);
+        targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center'>Failed to connect to database collection.</p>";
+        return;
+    }
+
+    if (!eyewearCollection || eyewearCollection.length === 0) {
+        targetGrid.innerHTML = "<p class='text-zinc-500 text-sm col-span-full text-center py-12'>No items currently in stock.</p>";
+        return;
+    }
+
     targetGrid.innerHTML = "";
 
-    EYEWEAR_COLLECTION.forEach(item => {
+    eyewearCollection.forEach(item => {
         const cardStructure = `
             <div class="product-card bg-zinc-900 border border-zinc-800/60 rounded-2xl overflow-hidden p-5 flex flex-col justify-between">
                 <div>
@@ -81,7 +61,6 @@ function initializeStorefront() {
     });
 }
 
-// Saves chosen model name to browser storage before routing
 function saveSelectedProduct(productTitle) {
     localStorage.setItem('selectedProductTitle', productTitle);
 }
