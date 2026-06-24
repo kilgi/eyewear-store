@@ -1,5 +1,6 @@
 const BUSINESS_CONTACT_NUMBER = "9779840032840";
 
+// Clean base project URL 
 const SUPABASE_URL = "https://hlctahkdvdfcrhoqfxzo.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_CUazdiJCEdeIEbrDv8Ji7g_XIQ0BeqR";
 
@@ -17,7 +18,7 @@ async function initializeStorefront() {
             .select('*');
 
         if (error) {
-            console.error(error);
+            console.error("Database fetch error:", error);
             targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center py-12'>Failed to connect to database collection.</p>";
             return;
         }
