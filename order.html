@@ -70,10 +70,10 @@
     </main>
 
     <script>
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1344265741639090207/q3r1E9FvVvSOf-I7b6f6O65nF6N455776O5N4N457nO45N57657nO45n675nO"; 
+        // PASTE YOUR ACTUAL, COMPLETE DISCORD WEBHOOK LINK HERE BETWEEN THE QUOTES
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1517531298413936674/NX2uJ-JTxRUtatI-yzFEdd1jk_faTNBfeRaBZB5K5yiUQo2wdllti93Tjri9GoMJt6yn"; 
         const FIREBASE_DB_URL = "https://eyewear-store-4ec1e-default-rtdb.firebaseio.com/";
 
-        // Monitors payment option selects to reveal or hide the QR area
         function toggleQrPaymentView() {
             const chosenMethod = document.getElementById('payment_method').value;
             const qrContainer = document.getElementById('qr_payment_container');
@@ -82,7 +82,7 @@
             if (chosenMethod === 'Prepaid') {
                 qrContainer.classList.remove('hidden');
                 referenceInput.placeholder = "Enter the 12-digit transaction ID";
-                referenceInput.required = true; // Makes reference ID required for prepaid orders
+                referenceInput.required = true;
             } else {
                 qrContainer.classList.add('hidden');
                 referenceInput.placeholder = "Only required if you paid via QR";
