@@ -1,6 +1,4 @@
 const BUSINESS_CONTACT_NUMBER = "9779840032840";
-
-// Updated to point directly to your active Firebase Database
 const FIREBASE_DB_URL = "https://eyewear-store-4ec1e-default-rtdb.firebaseio.com/";
 
 async function initializeStorefront() {
@@ -41,7 +39,7 @@ async function initializeStorefront() {
                             <button onclick="dispatchSecureOrder('${item.title}', '${item.price}')" class="w-full bg-white text-black py-2.5 rounded-xl text-xs font-black uppercase tracking-wider hover:bg-zinc-200 transition cursor-pointer">
                                 Order via WhatsApp
                             </button>
-                            <a href="order.html" onclick="saveSelectedProduct('${item.title}')" class="w-full bg-zinc-800 text-zinc-300 py-2.5 rounded-xl text-xs font-bold tracking-wide text-center hover:bg-zinc-700 transition border border-zinc-700/50">
+                            <a href="order.html" onclick="saveSelectedProduct('${item.title}')" class="backup-btn w-full bg-zinc-800 text-zinc-300 py-2.5 rounded-xl text-xs font-bold tracking-wide text-center hover:bg-zinc-700 transition border border-zinc-700/50 duration-300">
                                 Use Backup Form
                             </a>
                         </div>
@@ -50,8 +48,25 @@ async function initializeStorefront() {
             `;
             targetGrid.innerHTML += cardStructure;
         });
+
+        // Check if the user came here to find the backup form
+        applyBackupHighlighting();
+
     } catch (err) {
         targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center py-12'>Network connection error.</p>";
+    }
+}
+
+function applyBackupHighlighting() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('action') === 'backup') {
+        const backupButtons = document.querySelectorAll('.backup-btn');
+        
+        backupButtons.forEach(btn => {
+            // Transform the buttons into an obvious, pulsing gold color accent
+            btn.classList.remove('bg-zinc-800', 'text-zinc-300', 'border-zinc-700/50');
+            btn.classList.add('bg-amber-500', 'text-black', 'border-amber-400', 'font-black', 'animate-pulse');
+        });
     }
 }
 
