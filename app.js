@@ -1,26 +1,26 @@
 const BUSINESS_CONTACT_NUMBER = "9779840032840";
 
-// ⚠️ PASTE YOUR COPIED SUPABASE DETAILS HERE
-const SUPABASE_URL = "YOUR_SUPABASE_URL_HERE";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY_HERE";
+// Live Production API Configuration
+const SUPABASE_URL = "https://hlctahkdvdfcrhoqfxzo.supabase.co"; 
+const SUPABASE_ANON_KEY = "sb_publishable_CUazdiJCEdeIEbrDv8Ji7g_XIQ0BeqR";
 
-// Connect to the Supabase library
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialize client interface connection
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function initializeStorefront() {
     const targetGrid = document.getElementById('product-grid');
     if (!targetGrid) return;
 
-    targetGrid.innerHTML = "<p class='text-zinc-500 text-sm col-span-full text-center py-10'>Loading latest collection...</p>";
+    targetGrid.innerHTML = "<p class='text-zinc-500 text-sm col-span-full text-center py-12'>Loading latest collection...</p>";
 
-    // Fetch live entries from your table database
-    const { data: eyewearCollection, error } = await supabase
+    // Fetch live entries from your database table
+    const { data: eyewearCollection, error } = await supabaseClient
         .from('products')
         .select('*');
 
     if (error) {
         console.error("Error fetching inventory:", error);
-        targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center'>Failed to connect to database collection.</p>";
+        targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center py-12'>Failed to connect to database collection.</p>";
         return;
     }
 
