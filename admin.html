@@ -12,7 +12,7 @@
     <nav class="bg-zinc-900 border-b border-zinc-800/50 h-20 flex items-center justify-between px-8">
         <div class="flex items-center space-x-3">
             <span class="text-lg font-black tracking-widest uppercase text-white">Specs & Shade</span>
-            <span class="bg-zinc-800 text-zinc-400 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-zinc-700">Live Database Panel</span>
+            <span class="bg-zinc-800 text-zinc-400 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-zinc-700">Firebase Panel</span>
         </div>
         <a href="index.html" class="text-zinc-400 hover:text-white text-sm font-semibold transition-colors">&larr; View Storefront</a>
     </nav>
@@ -58,41 +58,32 @@
         </div>
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const SUPABASE_URL = "https://hlctahkdvdfcrhoqfxzo.supabase.co";
-        const SUPABASE_ANON_KEY = "sb_publishable_CUazdiJCEdeIEbrDv8Ji7g_XIQ0BeqR";
-
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const FIREBASE_DB_URL = "https://eyewear-store-3e2b2-default-rtdb.firebaseio.com/";
 
         async function fetchAndRenderInventory() {
             const container = document.getElementById('admin-inventory-list');
-            container.innerHTML = "<p class='text-zinc-500 text-xs py-4'>Querying table contents...</p>";
+            container.innerHTML = "<p class='text-zinc-500 text-xs py-4'>Querying database contents...</p>";
 
             try {
-                const { data: inventory, error } = await supabaseClient
-                    .from('products')
-                    .select('*');
+                const response = await fetch(`${FIREBASE_DB_URL}products.json`);
+                const data = await response.json();
 
-                if (error) {
-                    container.innerHTML = `<p class='text-red-400 text-xs py-4'>Error: ${error.message}</p>`;
-                    return;
-                }
-
-                if (!inventory || inventory.length === 0) {
+                if (!data) {
                     container.innerHTML = "<p class='text-zinc-500 text-xs py-4'>Inventory table is completely empty.</p>";
                     return;
                 }
 
                 container.innerHTML = "";
-                inventory.forEach(item => {
+                Object.keys(data).forEach(id => {
+                    const item = data[id];
                     container.innerHTML += `
                         <div class="bg-zinc-900 border border-zinc-800/60 rounded-xl p-4 flex items-center justify-between">
                             <div>
                                 <h4 class="text-sm font-bold text-white">${item.title}</h4>
                                 <p class="text-xs text-zinc-500">${item.specification} — <span class="text-zinc-400 font-semibold">${item.price}</span></p>
                             </div>
-                            <button onclick="deleteProduct('${item.id}')" class="bg-red-950/40 text-red-400 border border-red-900/50 hover:bg-red-900 hover:text-white transition px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
+                            <button onclick="deleteProduct('${id}')" class="bg-red-950/40 text-red-400 border border-red-900/50 hover:bg-red-900 hover:text-white transition px-3 py-1.5 rounded-lg text-xs font-bold cursor-pointer">
                                 Remove
                             </button>
                         </div>
@@ -112,12 +103,14 @@
             const photourl = document.getElementById('prod-url').value;
 
             try {
-                const { error } = await supabaseClient
-                    .from('products')
-                    .insert([{ title, specification, price, photourl }]);
+                const response = await fetch(`${FIREBASE_DB_URL}products.json`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, specification, price, photourl })
+                });
 
-                if (error) {
-                    alert("Insertion failed: " + error.message);
+                if (!response.ok) {
+                    alert("Insertion failed.");
                 } else {
                     this.reset();
                     fetchAndRenderInventory();
@@ -131,13 +124,12 @@
             if (!confirm("Are you sure you want to remove this product?")) return;
 
             try {
-                const { error } = await supabaseClient
-                    .from('products')
-                    .delete()
-                    .eq('id', id);
+                const response = await fetch(`${FIREBASE_DB_URL}products/${id}.json`, {
+                    method: 'DELETE'
+                });
 
-                if (error) {
-                    alert("Deletion error: " + error.message);
+                if (!response.ok) {
+                    alert("Deletion error.");
                 } else {
                     fetchAndRenderInventory();
                 }
