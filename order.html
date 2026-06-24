@@ -62,13 +62,15 @@
     </main>
 
     <script>
-        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1344265741639090207/q3r1E9FvVvSOf-I7b6f6O65nF6N455776O5N4N457nO45N57657nO45n675nO"; // Ensure your correct active webhook is placed here
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1344265741639090207/q3r1E9FvVvSOf-I7b6f6O65nF6N455776O5N4N457nO45N57657nO45n675nO"; 
         const FIREBASE_DB_URL = "https://eyewear-store-4ec1e-default-rtdb.firebaseio.com/";
 
-        // Fetch items directly from Firebase, populate choices, and auto-select the right one
         async function setupDynamicVariants() {
             const selectElement = document.getElementById('variant_select');
-            const preselectedProduct = localStorage.getItem('selectedProductTitle');
+            
+            // Instantly grab the chosen variant directly out of the address URL string
+            const urlParams = new URLSearchParams(window.location.search);
+            const preselectedProduct = urlParams.get('product');
 
             try {
                 const response = await fetch(`${FIREBASE_DB_URL}products.json`);
@@ -79,18 +81,15 @@
                     return;
                 }
 
-                // Clear out loading option
                 selectElement.innerHTML = '';
 
-                // Dynamically append all database choices
                 Object.keys(data).forEach(id => {
                     const item = data[id];
                     const option = document.createElement('option');
                     option.value = item.title;
                     option.textContent = `${item.title} — ${item.price}`;
                     
-                    // Auto-select if it matches the variant clicked on the home screen
-                    if (preselectedProduct && item.title === preselectedProduct) {
+                    if (preselectedProduct && item.title === decodeURIComponent(preselectedProduct)) {
                         option.selected = true;
                     }
                     
@@ -132,8 +131,6 @@
                 });
 
                 if (response.ok) {
-                    // Clear temporary selection cache
-                    localStorage.removeItem('selectedProductTitle');
                     window.location.href = "success.html";
                 } else {
                     alert("Something went wrong communicating with notifications server. Please retry.");
@@ -143,7 +140,6 @@
             }
         }
 
-        // Run variant calculations when page renders
         document.addEventListener('DOMContentLoaded', setupDynamicVariants);
     </script>
 </body>
