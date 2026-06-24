@@ -1,10 +1,8 @@
 const BUSINESS_CONTACT_NUMBER = "9779840032840";
 
-// Live Production API Configuration
 const SUPABASE_URL = "https://hlctahkdvdfcrhoqfxzo.supabase.co"; 
 const SUPABASE_ANON_KEY = "sb_publishable_CUazdiJCEdeIEbrDv8Ji7g_XIQ0BeqR";
 
-// Standard browser fallback initialization
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function initializeStorefront() {
@@ -14,13 +12,12 @@ async function initializeStorefront() {
     targetGrid.innerHTML = "<p class='text-zinc-500 text-sm col-span-full text-center py-12'>Loading latest collection...</p>";
 
     try {
-        // Fetch live entries from your database table
         const { data: eyewearCollection, error } = await supabaseClient
             .from('products')
             .select('*');
 
         if (error) {
-            console.error("Error fetching inventory:", error);
+            console.error(error);
             targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center py-12'>Failed to connect to database collection.</p>";
             return;
         }
@@ -37,7 +34,7 @@ async function initializeStorefront() {
                 <div class="product-card bg-zinc-900 border border-zinc-800/60 rounded-2xl overflow-hidden p-5 flex flex-col justify-between">
                     <div>
                         <div class="w-full aspect-square bg-zinc-950 rounded-xl overflow-hidden mb-5">
-                            <img src="${item.photoUrl}" alt="${item.title}" class="product-card-img w-full h-full object-cover opacity-90">
+                            <img src="${item.photourl}" alt="${item.title}" class="product-card-img w-full h-full object-cover opacity-90">
                         </div>
                         <h3 class="text-lg font-bold text-white tracking-tight">${item.title}</h3>
                         <p class="text-xs text-zinc-500 font-semibold mb-3">${item.specification}</p>
@@ -61,8 +58,7 @@ async function initializeStorefront() {
             targetGrid.innerHTML += cardStructure;
         });
     } catch (err) {
-        console.error("Connection caught error:", err);
-        targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center py-12'>Network connection blocked.</p>";
+        targetGrid.innerHTML = "<p class='text-red-400 text-sm col-span-full text-center py-12'>Network connection error.</p>";
     }
 }
 
